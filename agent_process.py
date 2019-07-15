@@ -24,7 +24,6 @@ class AgentProcess(Process):
             msg = self.conn.recv()
             if msg == "load":
                 self.agent.load_model()
-                self.agent.load_model()
                 print("Process "+str(self.id)+" loaded the master (0) model.")
 
             if msg[0] == "train_with_batchs":

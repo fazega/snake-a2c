@@ -67,7 +67,7 @@ class A2C():
 
         net = tf.layers.conv2d(input_states, 100, (4,4), activation='relu')
         net = tf.layers.batch_normalization(net)
-        net = tf.layers.conv2d(input_states, 200, (3,3), activation='relu')
+        net = tf.layers.conv2d(net, 200, (3,3), activation='relu')
         net = tf.layers.batch_normalization(net)
         net = tf.layers.flatten(net)
 
@@ -100,9 +100,9 @@ class A2C():
         self.value_loss = tf.reduce_mean((self.value_ph - self.output_value_flatten)**2)
         self.value_loss = tf.where(tf.is_nan(self.value_loss),0., self.value_loss)
 
-        learning_rate = tf.train.exponential_decay(0.0005,
+        learning_rate = tf.train.exponential_decay(0.0003,
                                         self.global_step, 1000,
-                                        0.95, staircase=True)
+                                        0.92, staircase=True)
         self.optimizer_p = tf.train.AdamOptimizer(learning_rate=learning_rate)
         self.gradients_p = self.optimizer_p.compute_gradients(self.action_loss, var_list=tf.trainable_variables())
         self.clipped_gradients_p = [(tf.clip_by_norm(grad, 20.0), var) if (grad is not None) else (tf.zeros_like(var),var) for grad, var in self.gradients_p]

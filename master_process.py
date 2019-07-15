@@ -57,6 +57,7 @@ class MasterProcess():
                 print("End of iteration "+str(iter)+". Mean score sor far : "+str(np.mean(mean_scores)))
                 iter += 1
                 file.write(str(np.mean(mean_scores))+"\n")
+                file.flush()
                 print("Time : "+str(time.time()-t0))
                 print("\n")
                 pipes[0].send(("train_with_batchs", list(batchs.values())))

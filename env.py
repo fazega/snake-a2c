@@ -43,12 +43,10 @@ class SnakeEnv():
 
         # Out of bounds => lost
         if(next_cell[0] < 0 or next_cell[0] >= variables.env_width or next_cell[1] < 0 or next_cell[1] >= variables.env_height):
-            # self.score += -1
             return None, 0, True
 
         # Eating itself => lost
-        if(self.grid[next_cell[0], next_cell[1]]):
-            # self.score += -1
+        if(self.grid[next_cell[0], next_cell[1]] == 3):
             return None, 0, True
 
         reward = 0
@@ -59,6 +57,7 @@ class SnakeEnv():
             reward = 1
             self.initFruit()
         self.grid[next_cell[0], next_cell[1]] = 1
+        self.grid[self.snake[1][0], self.snake[1][1]] = 3
 
         if(reward == 0):
             self.grid[self.snake[-1][0], self.snake[-1][1]] = 0
