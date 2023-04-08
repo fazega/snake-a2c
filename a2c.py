@@ -6,7 +6,8 @@ import os
 
 import numpy as np
 import tensorflow.compat.v1 as tf
-# Needed as we use the v1 tf.placeholder, with is incompatible with v2 eager execution.
+# Needed as we use the v1 tf.placeholder, with is incompatible with v2 eager
+# execution.
 tf.disable_eager_execution()
 
 import variables
@@ -56,7 +57,7 @@ class A2C:
 
         self._saver = tf.train.Saver()
         self._save_path = SAVE_PATH
-        self._load_model()
+        self.load_model()
 
     def load_model(self):
         """Loads the latest saved model, if any."""
@@ -76,7 +77,8 @@ class A2C:
     def _build_model(self):
         """Initializes the neural network architecture, with the TF graph."""
         self._input_states = tf.placeholder(
-            dtype=tf.float32, shape=[None, 1, variables.env_width, variables.env_height]
+            dtype=tf.float32,
+            shape=[None, 1, variables.env_width, variables.env_height],
         )
         input_states = tf.transpose(self._input_states, [0, 2, 3, 1])
 
@@ -87,7 +89,9 @@ class A2C:
         net = tf.layers.flatten(net)
 
         probsNet = tf.layers.dense(net, 200, tf.nn.leaky_relu)
-        self._output_action_logits = tf.layers.dense(probsNet, 4, activation=None)
+        self._output_action_logits = tf.layers.dense(
+            probsNet, 4, activation=None
+        )
         self._output_action_probs = tf.nn.softmax(self._output_action_logits)
 
         valueNet = tf.layers.dense(net, 200, tf.nn.leaky_relu)
@@ -99,8 +103,10 @@ class A2C:
         self._value_ph = tf.placeholder(tf.float32, (None,))
         self._advantages_ph = tf.placeholder(tf.float32, (None,))
 
-        self._cross_entropy_loss = tf.nn.sparse_softmax_cross_entropy_with_logits(
-            logits=self._output_action_probs, labels=self._actions_ph
+        self._cross_entropy_loss = (
+            tf.nn.sparse_softmax_cross_entropy_with_logits(
+                logits=self._output_action_probs, labels=self._actions_ph
+            )
         )
         self._action_loss = tf.reduce_mean(
             tf.multiply(self._cross_entropy_loss, self._advantages_ph)
@@ -119,7 +125,9 @@ class A2C:
         self._value_loss = tf.reduce_mean(
             (self._value_ph - self._output_value_flatten) ** 2
         )
-        self._value_loss = tf.where(tf.is_nan(self._value_loss), 0.0, self._value_loss)
+        self._value_loss = tf.where(
+            tf.is_nan(self._value_loss), 0.0, self._value_loss
+        )
 
         # Ops for the policy network.
         learning_rate = tf.train.exponential_decay(
@@ -157,9 +165,9 @@ class A2C:
     def __call__(self, state: np.ndarray) -> int:
         """Returns an action from an environment state."""
         probs = self._get_probs(state)
-        return np.random.choice(4, 1, p=p)[0]
+        return np.random.choice(4, 1, p=probs)[0]
 
-    def get_probs(self, state: np.ndarray) -> np.ndarray:
+    def _get_probs(self, state: np.ndarray) -> np.ndarray:
         """Returns the distribution over actions given a state."""
         probs = self._sess.run(
             self._output_action_probs,
@@ -175,7 +183,8 @@ class A2C:
 
     def train_with_batchs(self, batch) -> None:
         """Applies the gradients to the weights."""
-        # First, data processing on the batches to get a big list of states, actions and values.
+        # First, data processing on the batches to get a big list of states,
+        # actions and values.
         self._batch_states = []
         self._batch_values = []
         self._batch_actions = []
@@ -197,7 +206,8 @@ class A2C:
                 },
             )
             advantages = np.reshape(
-                np.array(self._batch_values[i : i + batch_size]) - predicted_values.T,
+                np.array(self._batch_values[i : i + batch_size])
+                - predicted_values.T,
                 (-1,),
             )
 
@@ -221,7 +231,9 @@ class A2C:
             )
 
     def save_model(self):
-        self._saver.save(self._sess, self._save_path, global_step=self._global_step)
+        self._saver.save(
+            self._sess, self._save_path, global_step=self._global_step
+        )
 
     @property
     def train_itr(self):

@@ -41,7 +41,9 @@ class SnakeEnv:
             np.random.randint(variables.env_height),
         )
         self._snake = [random_pos_snake]
-        self._grid[random_pos_snake[0], random_pos_snake[1]] = Tile.HEAD_SNAKE.value
+        self._grid[
+            random_pos_snake[0], random_pos_snake[1]
+        ] = Tile.HEAD_SNAKE.value
 
         self._reset_fruit()
 
@@ -57,7 +59,10 @@ class SnakeEnv:
                 np.random.randint(variables.env_width),
                 np.random.randint(variables.env_height),
             )
-            if self._grid[random_pos_fruit[0], random_pos_fruit[1]] == Tile.EMPTY.value:
+            if (
+                self._grid[random_pos_fruit[0], random_pos_fruit[1]]
+                == Tile.EMPTY.value
+            ):
                 break
         self._fruit = [random_pos_fruit]
         self._grid[random_pos_fruit[0], random_pos_fruit[1]] = Tile.FRUIT.value
@@ -74,7 +79,9 @@ class SnakeEnv:
             case 3:
                 shift = (0, -1)
             case _:
-                raise ValueError("The action must be between 0 and 3, included.")
+                raise ValueError(
+                    "The action must be between 0 and 3, included."
+                )
         next_cell = tuple(map(operator.add, shift, self._snake[0]))
 
         # Out of bounds => lost.
@@ -101,7 +108,9 @@ class SnakeEnv:
         self._grid[self._snake[1][0], self._snake[1][1]] = Tile.TAIL_SNAKE.value
 
         if reward == 0:
-            self._grid[self._snake[-1][0], self._snake[-1][1]] = Tile.EMPTY.value
+            self._grid[
+                self._snake[-1][0], self._snake[-1][1]
+            ] = Tile.EMPTY.value
             self._snake = self._snake[:-1]
 
         self._score += reward
