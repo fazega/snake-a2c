@@ -1,4 +1,5 @@
-from master_process import MasterProcess
+"""File to launch the experiment."""
 
-master = MasterProcess()
-master.train_agents()
+from master_process import launch
+
+launch()

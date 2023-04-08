@@ -1,13 +1,17 @@
-import numpy as np
-import tensorflow as tf
+"""The main object used for training."""
+
 import random
 import time
 import os
+
+import numpy as np
+import tensorflow as tf
+
 import variables
 
 
-class A2C():
-    def __init__(self, id):
+class A2C:
+    def __init__(self, id: int):
         self.id = id
 
         self.batch_states = []
