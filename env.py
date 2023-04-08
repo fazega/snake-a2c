@@ -56,7 +56,7 @@ class SnakeEnv:
             if(self._grid[random_pos_fruit[0], random_pos_fruit[1]] == Tile.EMPTY.value):
                 break
         self._fruit = [random_pos_fruit]
-        self._grid[random_pos_fruit[0], random_pos_fruit[1]] = Tile.FRUIT_SNAKE.value
+        self._grid[random_pos_fruit[0], random_pos_fruit[1]] = Tile.FRUIT.value
 
     def step(self, action: int) -> tuple[np.ndarray, float, bool]:
         """Returns the observation, reward and end of episode from an action."""
@@ -87,7 +87,7 @@ class SnakeEnv:
         # Eating fruit => good.
         if(self._grid[next_cell[0], next_cell[1]] == Tile.FRUIT.value):
             reward = 1
-            self._initFruit()
+            self._reset_fruit()
         self._grid[next_cell[0], next_cell[1]] = Tile.HEAD_SNAKE.value
         self._grid[self._snake[1][0], self._snake[1][1]] = Tile.TAIL_SNAKE.value
 
@@ -97,3 +97,7 @@ class SnakeEnv:
 
         self._score += reward
         return np.copy(self._grid), reward, False
+
+    @property
+    def score(self) -> float:
+        return self._score

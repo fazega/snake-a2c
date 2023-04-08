@@ -5,7 +5,8 @@ import time
 import os
 
 import numpy as np
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_eager_execution()
 
 import variables
 
@@ -38,14 +39,12 @@ class A2C:
 
         config = tf.ConfigProto()
         config.gpu_options.allow_growth = True
-        # config.log_device_placement=True
-        # config.gpu_options.per_process_gpu_memory_fraction = 0.2
         self.sess = tf.Session(config=config)
         self.initializer = tf.global_variables_initializer()
         self.sess.run(self.initializer)
 
         self.saver = tf.train.Saver()
-        self.save_path = "./trained_agents/a2c/"
+        self.save_path = "./models/"
         self.load_model()
 
 
@@ -75,12 +74,12 @@ class A2C:
         net = tf.layers.batch_normalization(net)
         net = tf.layers.flatten(net)
 
-        probsNet = tf.contrib.layers.fully_connected(net, 200, tf.nn.leaky_relu)
-        self.output_action_logits = tf.contrib.layers.fully_connected(probsNet, 4, activation_fn=None)
+        probsNet = tf.layers.dense(net, 200, tf.nn.leaky_relu)
+        self.output_action_logits = tf.layers.dense(probsNet, 4, activation=None)
         self.output_action_probs = tf.nn.softmax(self.output_action_logits)
 
-        valueNet = tf.contrib.layers.fully_connected(net, 200, tf.nn.leaky_relu)
-        self.output_value = tf.contrib.layers.fully_connected(valueNet, 1)
+        valueNet = tf.layers.dense(net, 200, tf.nn.leaky_relu)
+        self.output_value = tf.layers.dense(valueNet, 1)
 
     def _build_train_op(self):
         self.actions_ph = tf.placeholder(tf.int32, (None,))

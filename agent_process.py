@@ -44,7 +44,7 @@ class AgentProcess(Process):
                 env = SnakeEnv()
                 overall_data = 0
                 for i in range(self.n_games):
-                    state = env.init()
+                    state = env.reset()
                     t = 0
                     lastScoring = -1
                     while True:

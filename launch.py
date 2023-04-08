@@ -15,11 +15,12 @@ WINDOW_SCORES = 50_000
 
 def launch() -> None:
     """Launches an experiment."""
+    processes = {}
     pipes = {}
     # We add a +1 for the first process.
     for i in range(variables.n_process + 1):
         parent_connection, child_connection = Pipe()
-        pipes[i] = parent_conn
+        pipes[i] = parent_connection
         agent_process = AgentProcess(
             conn=child_connection, id=i, n_games=variables.n_per_process)
         agent_process.start()
@@ -53,11 +54,13 @@ def launch() -> None:
     window = WINDOW_SCORES // (variables.n_process*variables.n_per_process)
     mean_scores = []
     file = open("log_scores", "w")
-    for step in itertools.count():
+    step = 0
+    while True:
         if(len(scores) == variables.n_process):
             id_best = min(scores, key=scores.get)
             mean_scores.append(np.mean(list(scores.values())))
-            print("End of iteration "+str(iter)+". Mean score sor far : "+str(np.mean(mean_scores)))
+            print("End of iteration "+str(step)+". Mean score sor far : "+str(np.mean(mean_scores)))
+            step += 1
             file.write(str(np.mean(mean_scores))+"\n")
             file.flush()
             print("Time : "+str(time.time()-t0))
